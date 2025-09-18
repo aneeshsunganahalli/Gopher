@@ -93,7 +93,7 @@ func (r *RedisQueue) Dequeue(ctx context.Context) (*types.Job, error) {
 
 	values := result.Val()
 	if len(values) != 2 {
-		return nil, fmt.Errorf("unexpected BRPOP result: %w", values)
+		return nil, fmt.Errorf("unexpected BRPOP result: %v", values)
 	}
 
 	jobData := values[1]
@@ -163,3 +163,4 @@ func (r *RedisQueue) GetStats(ctx context.Context) (*QueueStats, error) {
 
 	return stats, nil
 }
+
