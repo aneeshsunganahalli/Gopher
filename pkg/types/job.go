@@ -24,7 +24,7 @@ type Job struct {
 type JobRequest struct {
 	Type       string          `json:"type" binding:"required"`
 	Payload    json.RawMessage `json:"payload" binding:"required"`
-	MaxRetries int             `json:"max_retries,omitempty"`
+	MaxRetries *int             `json:"max_retries,omitempty"`
 }
 
 // Job Response Struct
