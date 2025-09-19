@@ -112,17 +112,6 @@ func (w *Worker) processNextJob(ctx context.Context) error {
 	return w.executeJob(jobCtx, job)
 }
 
-// GetStats returns current worker statistics
-func (w *Worker) GetStats() WorkerStats {
-	return WorkerStats{
-		WorkerID:       w.config.ID,
-		JobsProcessed:  atomic.LoadInt64(&w.jobsProcessed),
-		JobsFailed:     atomic.LoadInt64(&w.jobsFailed),
-		JobsRetried:    atomic.LoadInt64(&w.jobsRetried),
-		IsActive:       w.IsActive(),
-	}
-}
-
 // executes a single job
 func (w *Worker) executeJob(ctx context.Context, job *types.Job) error {
 	startTime := time.Now()
@@ -214,6 +203,16 @@ func (w *Worker) requeueJobWithDelay(ctx context.Context, job *types.Job) error 
 	return nil
 }
 
+// GetStats returns current worker statistics
+func (w *Worker) GetStats() WorkerStats {
+	return WorkerStats{
+		WorkerID:       w.config.ID,
+		JobsProcessed:  atomic.LoadInt64(&w.jobsProcessed),
+		JobsFailed:     atomic.LoadInt64(&w.jobsFailed),
+		JobsRetried:    atomic.LoadInt64(&w.jobsRetried),
+		IsActive:       w.IsActive(),
+	}
+}
 
 // IsActive returns true if the worker is currently active
 func (w *Worker) IsActive() bool {
