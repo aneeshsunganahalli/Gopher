@@ -9,6 +9,9 @@ import (
 	"github.com/google/uuid"
 )
 
+// JobMetadata holds additional information about a job
+type JobMetadata map[string]interface{}
+
 // Queued Job Struct
 type Job struct {
 	ID         string          `json:"id"`
@@ -18,13 +21,14 @@ type Job struct {
 	MaxRetries int             `json:"max_retries"`
 	CreatedAt  time.Time       `json:"created_at"`
 	UpdatedAt  time.Time       `json:"updated_at"`
+	Metadata   JobMetadata     `json:"metadata,omitempty"`
 }
 
 // Job Submission Request
 type JobRequest struct {
 	Type       string          `json:"type" binding:"required"`
 	Payload    json.RawMessage `json:"payload" binding:"required"`
-	MaxRetries *int             `json:"max_retries,omitempty"`
+	MaxRetries *int            `json:"max_retries,omitempty"`
 }
 
 // Job Response Struct
