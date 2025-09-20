@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # Redis - Job Queue Backend
+  redis:
+    image: redis:7-alpine
+    container_name: job-queue-redis
+    ports:
+      - "6379:6379"
+    volumes:
+    - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Job Queue Server - HTTP API
+  server:
+    build:
+      context: .
+      dockerfile: deployments/docker/Dockerfile.server
+    container_name: job-queue-server
+    ports:
+      - "8080:8080"
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - SERVER_PORT=8080
+      - LOG_LEVEL=debug
+      - LOG_FORMAT=console
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  
+  # Job Queue Worker - Job Processor
+  worker:
+    build:
+      context: .
+      dockerfile: deployments/docker/Dockerfile.worker
+    container_name: job-queue-worker
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - WORKER_CONCURRENCY=3
+      - LOG_LEVEL=debug
+      - LOG_FORMAT=console
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+    deploy:
+      replicas: 2
+
+  # Redis Commander - Redis Web UI (Optional)
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: redis-commander
+    hostname: redis-commander
+    ports:
+      - "8081:8081"
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+      - HTTP_USER=admin
+      - HTTP_PASSWORD=secret
+    depends_on:
+      - redis
+
+volumes:
+  redis_data:
+    driver: local
