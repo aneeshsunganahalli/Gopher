@@ -39,6 +39,12 @@
 
 ---
 
+## <span style="color: #9B59B6;">📄 Workflow & Architecture Documentation</span>
+
+For a detailed step-by-step explanation of Gopher's workflow, job lifecycle, and real-world use cases, see [ARCHITECTURE.md](./ARCHITECTURE.md).
+
+---
+
 ## <span style="color: #9B59B6;">📦 Installation</span>
 
 ### <span style="color: #27AE60;">Clone & Build</span>
